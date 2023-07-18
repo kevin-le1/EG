@@ -5,7 +5,6 @@ import seaborn as sns
 import geopandas as gpd
 from shapely.geometry import Polygon, Point
 import json
-import numpy as np
 # the unused imports are commented out because they have been used once to allocate data to text files
 
 print("======================================================================================================================")
@@ -29,7 +28,7 @@ print(info.columns)
 
 print("======================================================================================================================")
 
-print("b. Return whether or not each row falls within a provided boundary")
+print("b. Return whether or not each row falls witshin a provided boundary")
 # allocating columns/rows so value manipulation is easier
 boundaryX = info[["x"]]
 boundaryY = info[["y"]]
@@ -41,14 +40,14 @@ box = gpd.GeoSeries(
 )
 
 # This is the code that has been excecuted to generate the text file for boolean results
-"""
-file = open('test3.txt', 'w')
-i = 0
-while i < 221330:
-    file.write(str(box.contains(Point(boundaryX.loc[i].astype('int'), boundaryY.loc[i].astype('int')) & (285 <= boundaryZ.loc[i].astype('int') <= 421).bool())))
-    i+=1
-file.close()
-"""
+def boundary():
+    file = open('test3.txt', 'w')
+    i = 0
+    while i < 221330:
+        file.write(str(box.contains(Point(boundaryX.loc[i].astype('int'), boundaryY.loc[i].astype('int')) & (285 <= boundaryZ.loc[i].astype('int') <= 421).bool())))
+        i+=1
+    file.close()
+
 
 # unit testing
 t = 22926
@@ -112,26 +111,24 @@ cur = 0
 team = info[["team"]]
 side = info[["side"]]
 
-"""
-while cur < 221330:
-    if((team.loc[cur] == "Team2").bool() and (side.loc[cur] == "T").bool()):
-        total+=1
-    cur+=1
+def boundPercentage():
+    while cur < 221330:
+        if((team.loc[cur] == "Team2").bool() and (side.loc[cur] == "T").bool()):
+            total+=1
+        cur+=1
 
-print(total)
+    print(total)
 
-boundary = 0
-i = 0
-while i < 221330:
-    if((team.loc[i] == "Team2").bool() and (side.loc[i] == "T").bool()):
-        if((boundaryZ.loc[i].astype('int') < 422).bool() or (boundaryZ.loc[i].astype('int') > 284).bool()):
-            if((box.contains(Point(boundaryX.loc[i].astype('int'), boundaryY.loc[i].astype('int')))).bool()):
-                boundary+=1
-    i+=1
+    boundary = 0
+    i = 0
+    while i < 221330:
+        if((team.loc[i] == "Team2").bool() and (side.loc[i] == "T").bool()):
+            if((boundaryZ.loc[i].astype('int') < 422).bool() or (boundaryZ.loc[i].astype('int') > 284).bool()):
+                if((box.contains(Point(boundaryX.loc[i].astype('int'), boundaryY.loc[i].astype('int')))).bool()):
+                    boundary+=1
+        i+=1
 
-print(boundary)
-"""
-
+    print(boundary)
 
 
 print("Boundary Total: 578")
@@ -152,34 +149,34 @@ print("guns alone. Considering that the other teammates may buy armor/other util
 print("equipment value to be 6000.")
 
 # This is the code ran to find the total Team2, terrorist and 2 smgs/rifles minimum and to find the total time in seconds
-"""
-time = 0
-timer = info[["clock_time"]]
-seconds = info[["seconds"]]
-value = info[["equipment_value_freezetime_end"]]
+def timeWithGun():
+    time = 0
+    timer = info[["clock_time"]]
+    seconds = info[["seconds"]]
+    value = info[["equipment_value_freezetime_end"]]
 
-# method to convert minutes to seconds
-def get_seconds(clock_time):
-    time_str = clock_time.values[0]  # Extract the string value from the pandas Series
-    parts = time_str.split(':')  # Split the string on the ':' separator
-    
-    minutes = int(parts[0])  # Extract the minutes part as an integer
-    seconds = int(parts[1])  # Extract the seconds part as an integer
-    
-    total_seconds = (minutes * 60) + seconds  # Calculate the total seconds
-    return total_seconds
-count = 0
-i = 0
-while i < 221330:
-    if((team.loc[i] == "Team2").bool() and (side.loc[i] == "T").bool()):
-        if((value.loc[i] > 6000).bool()):
-            count+=1
-            time+= int(get_seconds(timer.loc[i].astype(str)))
-            if(int(get_seconds(timer.loc[i].astype(str))) == 0):
-                time+=seconds.loc[i]
-    i+=1
-print(time, count)
-"""
+    # method to convert minutes to seconds
+    def get_seconds(clock_time):
+        time_str = clock_time.values[0]  # Extract the string value from the pandas Series
+        parts = time_str.split(':')  # Split the string on the ':' separator
+        
+        minutes = int(parts[0])  # Extract the minutes part as an integer
+        seconds = int(parts[1])  # Extract the seconds part as an integer
+        
+        total_seconds = (minutes * 60) + seconds  # Calculate the total seconds
+        return total_seconds
+    count = 0
+    i = 0
+    while i < 221330:
+        if((team.loc[i] == "Team2").bool() and (side.loc[i] == "T").bool()):
+            if((value.loc[i] > 6000).bool()):
+                count+=1
+                time+= int(get_seconds(timer.loc[i].astype(str)))
+                if(int(get_seconds(timer.loc[i].astype(str))) == 0):
+                    time+=seconds.loc[i]
+        i+=1
+    print(time, count)
+
 
 print("The calculated total time above is 173352 seconds")
 print("Now, finding the average timer, we will have to divide total time in seconds by 3013, every Team2, terrorist, with (minimum)")
@@ -209,6 +206,7 @@ array = [0] * 26
 
 i = 0
 # run time approximately 40 seconds due to large amount of data
+# 221330
 while i<221330:
     if((team.loc[i] == "Team2").bool() and (side.loc[i] == "CT").bool()):
         if(area.loc[i].isin(unique_values).bool()):
@@ -216,17 +214,21 @@ while i<221330:
             array[index] += 1
     i+=1
 print(array)
-data = pd.DataFrame({
-    'Location': ['TSpawn', 'TStairs', 'Tunnels', 'Fountain', 'LowerPark', 'Playground', 'Alley',
+
+Location = ['TSpawn', 'TStairs', 'Tunnels', 'Fountain', 'LowerPark', 'Playground', 'Alley',
                 'Connector', 'BombsiteA', 'Canal', 'Pipe', 'Water', 'Construction', 'UpperPark',
                 'Restroom', 'Lobby', 'StorageRoom', 'SnipersNest', 'BackofA', 'Stairs',
                 'UnderA', 'Walkway', 'Bridge', 'BombsiteB', None, 'SideAlley'],
+
+data = pd.DataFrame({
+    'Location': [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
     'Frequency': [array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], 
                   array[9], array[10], array[11], array[12], array[13], array[14], array[15], array[16], array[17], 
                   array[18], array[19], array[20], array[21], array[22], array[23], array[24], array[25]]
 })
+
 # Reshape the data to create a matrix
-heatmap_data = data.pivot(index=None, columns='Location', values='Frequency')
+heatmap_data = data.pivot(index='Frequency', columns='Location', values='Frequency')
 
 # Create the heatmap using seaborn
 plt.figure(figsize=(15, 10))
@@ -243,6 +245,7 @@ plt.show()
 
 print("From the heatmap, shown in red, or the probability closer to the highest value (8447), will display which region most likely to  be in.")
 print("So, from the heat map, I would tell our coaching staff that I'd suspect them to be waiting in LowerPark inside 'BombsiteB'")
+print("This is because within the array, location 4 is LowerPark" +" Since the location is #4")
 
 
 # heat map (for fun) just for visualization purposes
